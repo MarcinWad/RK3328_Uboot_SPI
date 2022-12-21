@@ -1,6 +1,15 @@
-This is simple tutorial for compiling MainLine U-Boot for RockChip RK3328 with ability to boot from SPI Flash based on NanoPI R2S board from FriendlyElec.
 
-*Warning. There is a problem with rebooting board. After succesfull boot from SPI, software reset in Uboot or reboot in Linux Kernel will not work. Board will go into MASKROM mode or if you have a working MMC card inserted - it will boot from MMC card. Like SPI is gone. Only power cycle (with disconnected UART) will bring it back again to boot from SPI. I am investigating where is the problem. *
+RK3328 NanoPi R2S U-Boot SPI Tutorial
+=========================================
+This is a tutorial for compiling MainLine U-Boot for RockChip RK3328 with ability to boot from SPI Flash based on NanoPI R2S board from FriendlyElec.
+
+I've lost a lot of hours trying to figure out how to do this using many articles. All of them wasn't successfull. Hope it helps for 
+
+*Warning. There is a problem with rebooting board. After succesfull boot from SPI, software reset in Uboot or reboot in Linux Kernel will not work. Board will go into MASKROM mode or if you have a working MMC card inserted - it will boot from MMC card. Like SPI is gone. Only power cycle (with disconnected UART) will bring it back again to boot from SPI. I am investigating where is the problem. 
+It looks like the speed of SPI is not being reseted after CPU reset so CPU doesn't see SPI after software reboot.
+*
+
+
 
 1. Get AArch64 Toolchain
 
