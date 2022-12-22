@@ -12,7 +12,7 @@ Soldering a SPI chip which is bigger than 16Mbytes will not let board bootup aft
 I lost about two weeks finding that BOOTROM limitation in RockCHIP. Problem is that >16 Mbytes SPI Flash Chips uses 4-byte addressing instead of 3-byte addressing.
 4-byte addressing is being enabled in SPL U-Boot Stage or later in Linux MTD driver. 
 
-After switching to 4-byte addressing, and issuing a reboot, RocChhip BootROM tries to talk to SPI using 3-byte addressing bus which fails and then boot stops in MASKROM mode. It happens only in warm reboot. Cold reboot resets SPI registers and everything is ok.
+After switching to 4-byte addressing, and issuing a reboot, Rockchip BootROM tries to talk to SPI using 3-byte addressing bus which fails and then boot stops in MASKROM mode. It happens only in warm reboot. Cold reboot resets SPI registers and everything is ok.
 
 Second disaster i was fighting with was a situation when connected UART USB was powering board (with USB-C power disconnected) enough to no let SPI registers reset. So i also had problems with cold-reboots when i was diagnosing this situation. Beaware of rockchip lack of documentation and wasted time.
 
