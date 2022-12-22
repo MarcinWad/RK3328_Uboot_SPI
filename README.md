@@ -5,11 +5,22 @@ This is a tutorial for compiling MainLine U-Boot for RockChip RK3328 with abilit
 
 I've lost a lot of hours trying to figure out how to do this using many articles. All of them wasn't successfull. Hope it helps for 
 
-*Warning. There is a problem with rebooting board. After succesfull boot from SPI, software reset in Uboot or reboot in Linux Kernel will not work. Board will go into MASKROM mode or if you have a working MMC card inserted - it will boot from MMC card. Like SPI is gone. Only power cycle (with disconnected UART) will bring it back again to boot from SPI. I am investigating where is the problem. 
-It looks like the speed of SPI is not being reseted after CPU reset so CPU doesn't see SPI after software reboot.
-*
+*Warning. !!!!!!
+==============
+Soldering a SPI chip which is bigger than 16Mbytes will not let board bootup after software reset (using reset in UBoot or reboot in Linux)
+
+I lost about two weeks finding that BOOTROM limitation in RockCHIP. Problem is that >16 Mbytes SPI Flash Chips uses 4-byte addressing instead of 3-byte addressing.
+4-byte addressing is being enabled in SPL U-Boot Stage or later in Linux MTD driver. 
+
+After switching to 4-byte addressing, and issuing a reboot, RochChhip BootROM tries to talk to SPI using 3-byte addressing bus which fails and then boot stops in MASKROM mode. It happens only in warm reboot. Cold reboot resets SPI registers and everything is ok.
+
+Second disaster i was fighting with was a situation when connected UART USB was powering board (with USB-C power disconnected) enough to no let SPI registers reset. So i also had problems with cold-reboots when i was diagnosing this situation. Beaware of rockchip lack of documentation and wasted time.
+
+I will leave this information for everybody so nobody will spend almost 2 weeks in figuring this out by himself. 
 
 
+SPI Boot procedure
+===============
 
 1. Get AArch64 Toolchain
 
