@@ -5,7 +5,7 @@ This is a tutorial for compiling MainLine U-Boot for RockChip RK3328 with abilit
 
 I've lost a lot of hours trying to figure out how to do this using many articles. All of them wasn't successfull. Hope it helps for 
 
-*Warning. !!!!!!
+Warning!!!!!!
 ==============
 Soldering a SPI chip which is bigger than 16Mbytes will not let board bootup after software reset (using reset in UBoot or reboot in Linux)
 
