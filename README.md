@@ -18,6 +18,22 @@ Second disaster i was fighting with was a situation when connected UART USB was 
 
 I will leave this information for everybody so nobody will spend almost 2 weeks in figuring this out by himself. 
 
+You need to patch those files when your flash is >16Mb and you want to reboot works like it should.
+
+Kernel:
+```drivers/mtd/spi-nor.c```
+
+from ``} else if (mtd->size > 0x1000000) {`` to ``} else if (mtd->size > 0x2000000) {``
+
+U-boot SPL part:
+```drivers/mtd/spi-nor-tiny.c```
+from ``} else if (mtd->size > 0x1000000) {`` to ``} else if (mtd->size > 0x2000000) {``
+
+Uboot Payload:
+```drivers/mtd/spi-nor-core.c```
+from ``if (nor->addr_width == 3 && mtd->size > SZ_16M) {`` to ``if (nor->addr_width == 3 && mtd->size > SZ_32M) {``
+
+It will work but will limit access to only first 16Mb of 32Mb Flash SPI.
 
 SPI Boot procedure
 ===============
