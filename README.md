@@ -50,8 +50,11 @@ SPI Boot procedure
   ```
   git clone --depth 1 https://github.com/ARM-software/arm-trusted-firmware.git
   cd arm-trusted-firmware
+  git checkout v2.3
+  #Patch to make EFUSE work - otherwise you will get all 00000000..... RockChip....
+  patch -p1 < misc.rk3328/atf-rk3328-efuse-init.patch
   make realclean
-  make CROSS_COMPILE=aarch64-linux-gnu- PLAT=rk3399
+  make CROSS_COMPILE=aarch64-linux-gnu- PLAT=rk3328
   cd ..
   ```
 
