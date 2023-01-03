@@ -86,10 +86,11 @@ SPI Boot procedure
     CONFIG_DM_MTD=y
     CONFIG_SPI_FLASH_WINBOND=y
     CONFIG_SPI_FLASH_MTD=y
-    CONFIG_ROCKCHIP_SPI=y```
+    CONFIG_ROCKCHIP_SPI=y
+    ```
 
-5.1 Rockchip EFUSE support need to add to ``{ .compatible = "rockchip,rk3328-efuse" },`` to file`` drivers/misc/rockchip-efuse.c`` because otherwise it will not Boot and hang.
-	Without EFUSE - mac address will be always the same between boards.
+For Rockchip EFUSE support need to add to ``{ .compatible = "rockchip,rk3328-efuse" },`` to file`` drivers/misc/rockchip-efuse.c`` because otherwise it will not Boot and hang. EFUSE - mac address will be always the same between boards.
+	
 6. SPI Boot on RK3328 from MMC and SPI (!!!) starts from offset 0x8000 so we will create a padding zero byte file for further use:
   
 	``dd if=/dev/zero of=zero32k.bin bs=32768 count=1``
