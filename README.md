@@ -316,7 +316,7 @@ Hit any key to stop autoboot:  0
 Write kernel to the SPI image and boot it
 =========================================
 
-Obtaining and compiling the kernel itself is not part of this tutorial. This step presumes an existing kernel is provided. For example, an RK3328 buildroot could be used to compile a minimal `Image.gz` kernel image fitted into FIT Image. The provided [kernel.config](kernel.config) build a ~5Mbytes kernel with options to boot from SPI an use it as RootFS. After building the image, you will get `Image.gz` and SquashFS rootfs image.
+Obtaining and compiling the kernel itself is not part of this tutorial. This step presumes an existing kernel is provided. For example, an RK3328 buildroot could be used to compile a minimal `Image.gz` kernel image fitted into FIT Image. The provided [kernel.config](kernel.config) builds a ~5Mbytes kernel with options to boot from SPI an use it as RootFS. After building the image, you will get `Image.gz` and SquashFS rootfs image.
 
 The following layout presents the possible address ranges ("Bootloader" incorporates the SPI Flash image discussed in previous steps):
 
