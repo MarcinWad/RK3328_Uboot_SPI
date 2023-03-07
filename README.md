@@ -270,3 +270,57 @@ For Rockchip EFUSE support need to add to ``{ .compatible = "rockchip,rk3328-efu
     Net:   eth0: ethernet@ff540000
     Hit any key to stop autoboot:  0
 	```
+Kernel Boot
+==============
+
+Obtaining and compiling kernel itself is not part of this tutorial. I assume that you can do this externally and have knowledge of compiling kernel. I used rk3328 buildroot as a base and compiled minimal kernel which boots fine as Image.gz fitted in FIT Image.
+
+In my repo you will find a .config file for kernel compilation. It has options to boot from SPI an use it as RootFS. After building image you will get Image.gz and SquashFS rootfs image. Using my config file - you will get Kernel in about 5Mbytes in size.
+
+My Flash layout is as follows:
+
+| Offset | Size | Info |
+| ------------ | ------------ | ------------ |
+|0x0	| 0x200000 | Bootloader |
+|0x200000 | 0x500000 |  Kernel |
+|0x700000 | 0x500000 | RootFS |
+|0xc00000 | 0x100000 | JFFS2 Read Write  partition |
+
+Those are setup data in Uboot compile process:
+```
+defaults:
+mtdids  : nor0=w25q256
+mtdparts: mtdparts=w25q256:0x200000(U-Boot),0x500000(Kernel),0x500000(RootFS),0x100000(Data)-(Unused)
+```
+
+It is time to prepare kernel FIT image and DTS from NanoPI that works well. Use modified DTS and fit-image.its from my repo. Place Image.gz, DTS file and fit-image.its in same directory and isse command:
+```
+mkimage -f fit-image.its kernel.itb
+```
+File kernel.itb is an image that we will write into SPI memory.
+
+After succesfull compilation process of kernel and Rootfs, it's time to flash it to memory. Setup A TFTP server in same subnet and prepare to Flash.
+
+Flashing kernel to SPI:
+```
+tftp 0x300000 kernel.itb
+sf erase 0x200000 0x500000
+sf write 0x300000 0x200000 $filesize
+```
+Flashing rootfs to SPI:
+```
+tftp 0x300000 rootfs.squashfs
+sf erase 0x700000 0x500000
+sf write 0x300000 0x700000 $filesize
+```
+
+It's time to setup env settings to make it work:
+Issue following command to setup env variables in Uboot command line. Then reboot. Board should boot to command prompt.
+```
+setenv bootargs earlycon=uart8250,mmio32,0xff130000 console=ttyFIQ0 mtdparts=spi0.0:0x200000(U-Boot),0x500000(Kernel),0x500000(Rootfs),0x100000(Data),-(Unused)  rootfstype=squashfs root=/dev/mtdblock2
+setenv bootcmd "sf probe; sf read 0x400000 0x200000 0x500000; bootm 0x400000"
+saveenv
+```
+
+
+	
