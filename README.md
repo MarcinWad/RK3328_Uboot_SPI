@@ -18,7 +18,7 @@ Prerequisites
 * SPI Flash chip
 
 <details>
-<summary>WARNING: the use of SPI Flash chip larger than 16Mbytes requires additional changes!</summary>
+<summary>WARNING: the use of SPI Flash chip larger than 16Mbytes requires additional changes! (Click to show details)</summary>
 <br>
 An SPI chip which is bigger than 16Mbytes will not let board bootup after software reset (using `reset` in UBoot or `reboot` in Linux). Problem is that >16 Mbytes SPI Flash Chips uses 4-byte addressing instead of 3-byte addressing. 4-byte addressing is being enabled in SPL U-Boot Stage or later in Linux MTD driver. 
 
