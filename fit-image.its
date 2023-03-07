@@ -1,0 +1,49 @@
+
+
+/dts-v1/;
+
+/ {
+        description = "Test RK3328 Boot image";
+        #address-cells = <1>;
+
+        images {
+                kernel {
+                        description = "Kernel";
+                        data = /incbin/("Image.gz");
+                        type = "kernel";
+                        arch = "arm64";
+                        os = "linux";
+                        compression = "gzip";
+                        load = <0x02008000>;
+                        entry = <0x02008000>;
+                        hash {
+                                algo = "sha1";
+                        };
+                };
+                fdt {
+                        description = "DTB";
+                        data = /incbin/("rk3328-nanopi-r2-rev03.dtb");
+                        type = "flat_dt";
+                        arch = "arm64";
+                        compression = "none";
+                        load = <0x33000000>;
+                        entry = <0x33000000>;
+                        hash {
+                                algo = "sha1";
+                        };
+                };
+        };
+
+        configurations {
+                default = "standard";
+                standard {
+                        description = "Standard Boot";
+                        kernel = "kernel";
+                        fdt = "fdt";
+                        hash {
+                                algo = "sha1";
+                        };
+                };
+        };
+
+};   
