@@ -11,6 +11,13 @@ Briefly, the procedure consists of the following steps:
 4. Write the SPI image to the SPI Flash chip
 5. Write kernel to the SPI image and boot it
 
+All steps are explained in detail below. Alternatively, steps 1-4 could be executed with a Docker script. Use the following commands to build `idb_finish.img` and copy it back from the Docker container:
+
+```
+DOCKER_BUILDKIT=1 docker build -t rk3328-uboot-spi .
+bash -c 'docker run --rm -v $(pwd):$(pwd) rk3328-uboot-spi cp /idb_finish.img $(pwd)/'
+```
+
 Prerequisites
 =============
 
@@ -117,7 +124,7 @@ chosen {
 };
 ```
 
-* Edit file ``arch/arm/dts/rk3328-nanopi-r2s.dts`` and add SPI Flash Node:
+* Edit file `arch/arm/dts/rk3328-nanopi-r2s.dts` and add SPI Flash Node:
 
 ```
 &spi0 {
