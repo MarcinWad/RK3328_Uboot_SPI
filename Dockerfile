@@ -21,9 +21,7 @@ RUN apt update && \
         swig \
         libssl-dev \
         bc \
-        vim \
-        less \
-        tmux
+        device-tree-compiler
 
 ###############################################################################
 
@@ -44,11 +42,12 @@ RUN git checkout v2.3 && \
 
 FROM toolchain as u-boot
 
-RUN git clone --depth 1 https://source.denx.de/u-boot/u-boot.git
-
+RUN git clone https://source.denx.de/u-boot/u-boot.git
+ 
 WORKDIR /u-boot
-
-RUN make nanopi-r2s-rk3328_defconfig
+ 
+RUN git checkout v2023.01 && \
+    make nanopi-r2s-rk3328_defconfig
 
 RUN <<EOF cat >> .config_extra
 CONFIG_ROCKCHIP_EFUSE=y

@@ -46,11 +46,12 @@ Note: above will work, but limits access to only first 16Mb of 32Mb SPI Flash.
 Configure and patch files of the mainline U-boot
 ================================================
 
-1. Download latest U-Boot from https://github.com/u-boot/u-boot
+1. Download latest U-Boot from https://github.com/u-boot/u-boot and switch into to a some well-working release branch:
 
 ```
-git clone --depth 1 https://source.denx.de/u-boot/u-boot.git
+git clone https://source.denx.de/u-boot/u-boot.git
 cd u-boot
+git checkout v2023.01
 ```
 
 2. Compile ARM Trusted Platform for RK3328
