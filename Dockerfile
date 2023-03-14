@@ -79,7 +79,7 @@ EOF
 
 RUN cat .config_extra | sed 's|=.*|=|' | xargs -I{} sed -i 's|{}.*||' .config
 
-RUN cat .config_extra >> config
+RUN cat .config_extra >> .config
 
 RUN <<EOF cat >> arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi
 &spi0 {
