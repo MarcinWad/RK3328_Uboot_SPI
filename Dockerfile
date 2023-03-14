@@ -132,7 +132,7 @@ RUN ./tools/mkimage -n rk3328 -T rksd -d tpl/u-boot-tpl.bin idbloader.img
 #COPY uboot_debug.patch /uboot_debug.patch
 #RUN patch -p1 < /uboot_debug.patch
 
-RUN make CROSS_COMPILE=aarch64-linux-gnu- u-boot.itb
+RUN BL31=/bl31.elf make CROSS_COMPILE=aarch64-linux-gnu- u-boot.itb
 
 ###############################################################################
 
