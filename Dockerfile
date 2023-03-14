@@ -134,6 +134,8 @@ COPY --from=u-boot /u-boot/idbloader.img /
 COPY --from=u-boot /u-boot/spl/u-boot-spl.bin /
 COPY --from=u-boot /u-boot/u-boot.itb /
 
+# Note: we write u-boot.itb twice, because on SD card
+# it will be searched for at block 16384
 RUN \
     cat idbloader.img > newidb.img && \
     cat u-boot-spl.bin >> newidb.img && \
@@ -141,5 +143,5 @@ RUN \
     cat u-boot.itb >> newidb.img && \
     dd if=/dev/zero of=zero32k.bin bs=32768 count=1 && \
     cat zero32k.bin > idb_finish.img && \
-    cat newidb.img >> idb_finish.img
-
+    cat newidb.img >> idb_finish.img && \
+    dd if=u-boot.itb of=idb_finish.img bs=512 seek=16384

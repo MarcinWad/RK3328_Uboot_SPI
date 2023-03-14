@@ -245,6 +245,12 @@ cat zero32k.bin > idb_finish.img
 cat newidb.img >> idb_finish.img
 ```
 
+6. Write `u-boot.itb` again, because on SD card it will be searched for at block 16384:
+
+```
+dd if=u-boot.itb of=idb_finish.img bs=512 seek=16384
+```
+
 The resulting image is prepared in file `idb_finish.img`.
 
 Write the SPI image to the SPI Flash chip
