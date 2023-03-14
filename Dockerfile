@@ -113,7 +113,7 @@ EOF
 
 RUN sed -i 's|[BROM_BOOTSOURCE_EMMC] = "/mmc@ff520000",|[BROM_BOOTSOURCE_SPINOR] "/spi@ff190000", [BROM_BOOTSOURCE_EMMC] = "/mmc@ff520000",|' arch/arm/mach-rockchip/rk3328/rk3328.c
 
-RUN sed -i 's|uclass_get_device_by_of_offset(UCLASS_SPI_FLASH|uclass_get_device_by_of_offset(UCLASS_SPI_FLASH|' arch/arm/mach-rockchip/spl-boot-order.c
+RUN sed -i 's|uclass_get_device_by_of_offset(UCLASS_SPI_FLASH|uclass_get_device_by_of_offset(UCLASS_SPI|g' arch/arm/mach-rockchip/spl-boot-order.c
 
 COPY --from=trust /arm-trusted-firmware/build/rk3328/release/bl31/bl31.elf /
 
