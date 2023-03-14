@@ -89,7 +89,7 @@ RUN <<EOF cat >> arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi
 };
 EOF
 
-RUN sed -i.bak 's|u-boot,spl-boot-order = "same-as-spl", &sdmmc, &emmc;|u-boot,spl-boot-order = "same-as-spl", \&spi0, \&sdmmc;|' \
+RUN sed -i.bak 's|u-boot,spl-boot-order = "same-as-spl", &sdmmc, &emmc;|u-boot,spl-boot-order = "same-as-spl", \&sdmmc, \&spi_flash;|' \
     arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi && (! diff arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi.bak &> /dev/null)
 
 RUN <<EOF cat >> arch/arm/dts/rk3328-nanopi-r2s.dts

@@ -117,11 +117,11 @@ CONFIG_ROCKCHIP_SPI=y
 };
 ```
 
-* Edit the same file and add &spi0 node to boot-order:
+* Edit the same file and add &spi_flash node to boot-order (put it last, if you want to allow recovery from SD card):
 
 ```
 chosen {
-	u-boot,spl-boot-order = "same-as-spl", &spi0, &sdmmc;
+    u-boot,spl-boot-order = "same-as-spl", &sdmmc, &spi_flash;
 };
 ```
 
