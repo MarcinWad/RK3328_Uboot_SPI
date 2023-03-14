@@ -107,7 +107,7 @@ RUN <<EOF cat >> arch/arm/dts/rk3328-nanopi-r2s.dts
 EOF
 
 RUN <<EOF cat >> drivers/spi/rk_spi.c
-DM_DRIVER_ALIAS(rockchip_rk3288_spi, rockchip_rk3328_spi);
+DM_DRIVER_ALIAS(rockchip_rk3288_spi, rockchip_rk3328_spi)
 EOF
 
 RUN sed -i.bak 's|\[BROM_BOOTSOURCE_EMMC\] = "/mmc@ff520000",|[BROM_BOOTSOURCE_SPINOR] "/spi@ff190000", [BROM_BOOTSOURCE_EMMC] = "/mmc@ff520000",|' \

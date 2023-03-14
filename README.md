@@ -144,7 +144,7 @@ chosen {
 8. Fix RockChip SPI Driver `drivers/spi/rk_spi.c` and add at the end:
 
 ```
-DM_DRIVER_ALIAS(rockchip_rk3288_spi, rockchip_rk3328_spi);
+DM_DRIVER_ALIAS(rockchip_rk3288_spi, rockchip_rk3328_spi)
 ```
 
 9. Fix boot device in Uboot RK3328 code:
