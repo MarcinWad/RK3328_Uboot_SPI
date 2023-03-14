@@ -43,9 +43,9 @@ RUN git checkout v2.3 && \
 FROM toolchain as u-boot
 
 RUN git clone https://source.denx.de/u-boot/u-boot.git
- 
+
 WORKDIR /u-boot
- 
+
 RUN git checkout v2023.01 && \
     make nanopi-r2s-rk3328_defconfig
 
@@ -89,8 +89,8 @@ RUN <<EOF cat >> arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi
 };
 EOF
 
-RUN sed -i 's|u-boot,spl-boot-order = "same-as-spl", &sdmmc, &emmc;|u-boot,spl-boot-order = "same-as-spl", \&spi0, \&sdmmc;|' \
-    arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi
+RUN sed -i.bak 's|u-boot,spl-boot-order = "same-as-spl", &sdmmc, &emmc;|u-boot,spl-boot-order = "same-as-spl", \&spi0, \&sdmmc;|' \
+    arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi && (! diff arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi.bak &> /dev/null)
 
 RUN <<EOF cat >> arch/arm/dts/rk3328-nanopi-r2s.dts
 &spi0 {
@@ -110,9 +110,11 @@ RUN <<EOF cat >> drivers/spi/rk_spi.c
 DM_DRIVER_ALIAS(rockchip_rk3288_spi, rockchip_rk3328_spi);
 EOF
 
-RUN sed -i 's|[BROM_BOOTSOURCE_EMMC] = "/mmc@ff520000",|[BROM_BOOTSOURCE_SPINOR] "/spi@ff190000", [BROM_BOOTSOURCE_EMMC] = "/mmc@ff520000",|' arch/arm/mach-rockchip/rk3328/rk3328.c
+RUN sed -i.bak 's|\[BROM_BOOTSOURCE_EMMC\] = "/mmc@ff520000",|[BROM_BOOTSOURCE_SPINOR] "/spi@ff190000", [BROM_BOOTSOURCE_EMMC] = "/mmc@ff520000",|' \
+    arch/arm/mach-rockchip/rk3328/rk3328.c && (! diff arch/arm/mach-rockchip/rk3328/rk3328.c arch/arm/mach-rockchip/rk3328/rk3328.c.bak)
 
-RUN sed -i 's|uclass_get_device_by_of_offset(UCLASS_SPI_FLASH|uclass_get_device_by_of_offset(UCLASS_SPI|g' arch/arm/mach-rockchip/spl-boot-order.c
+RUN sed -i.bak 's|uclass_get_device_by_of_offset(UCLASS_SPI_FLASH|uclass_get_device_by_of_offset(UCLASS_SPI|g' \
+    arch/arm/mach-rockchip/spl-boot-order.c && (! diff arch/arm/mach-rockchip/spl-boot-order.c arch/arm/mach-rockchip/spl-boot-order.c.bak)
 
 COPY --from=trust /arm-trusted-firmware/build/rk3328/release/bl31/bl31.elf /
 
