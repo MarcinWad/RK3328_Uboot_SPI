@@ -46,11 +46,12 @@ Note: above will work, but limits access to only first 16Mb of 32Mb SPI Flash.
 Configure and patch files of the mainline U-boot
 ================================================
 
-1. Download latest U-Boot from https://github.com/u-boot/u-boot
+1. Download latest U-Boot from https://github.com/u-boot/u-boot and switch into to a some well-working release branch:
 
 ```
-git clone --depth 1 https://source.denx.de/u-boot/u-boot.git
+git clone https://source.denx.de/u-boot/u-boot.git
 cd u-boot
+git checkout v2023.01
 ```
 
 2. Compile ARM Trusted Platform for RK3328
@@ -116,11 +117,11 @@ CONFIG_ROCKCHIP_SPI=y
 };
 ```
 
-* Edit the same file and add &spi0 node to boot-order:
+* Edit the same file and add &spi_flash node to boot-order (put it last, if you want to allow recovery from SD card):
 
 ```
 chosen {
-	u-boot,spl-boot-order = "same-as-spl", &spi0, &sdmmc;
+    u-boot,spl-boot-order = "same-as-spl", &sdmmc, &spi_flash;
 };
 ```
 
@@ -143,7 +144,7 @@ chosen {
 8. Fix RockChip SPI Driver `drivers/spi/rk_spi.c` and add at the end:
 
 ```
-DM_DRIVER_ALIAS(rockchip_rk3288_spi, rockchip_rk3328_spi);
+DM_DRIVER_ALIAS(rockchip_rk3288_spi, rockchip_rk3328_spi)
 ```
 
 9. Fix boot device in Uboot RK3328 code:
@@ -242,6 +243,12 @@ cat u-boot.itb >> newidb.img
 dd if=/dev/zero of=zero32k.bin bs=32768 count=1
 cat zero32k.bin > idb_finish.img
 cat newidb.img >> idb_finish.img
+```
+
+6. Write `u-boot.itb` again, because on SD card it will be searched for at block 16384:
+
+```
+dd if=u-boot.itb of=idb_finish.img bs=512 seek=16384
 ```
 
 The resulting image is prepared in file `idb_finish.img`.

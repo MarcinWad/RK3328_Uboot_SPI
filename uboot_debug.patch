@@ -1,0 +1,13 @@
+diff --git a/include/common.h b/include/common.h
+index 25c317f443..ee7daaeaef 100644
+--- a/include/common.h
++++ b/include/common.h
+@@ -12,6 +12,8 @@
+ #ifndef __COMMON_H_
+ #define __COMMON_H_	1
+ 
++#define LOG_DEBUG
++
+ #ifndef __ASSEMBLY__		/* put C only stuff in this section */
+ #include <config.h>
+ #include <errno.h>

@@ -21,9 +21,7 @@ RUN apt update && \
         swig \
         libssl-dev \
         bc \
-        vim \
-        less \
-        tmux
+        device-tree-compiler
 
 ###############################################################################
 
@@ -44,11 +42,12 @@ RUN git checkout v2.3 && \
 
 FROM toolchain as u-boot
 
-RUN git clone --depth 1 https://source.denx.de/u-boot/u-boot.git
+RUN git clone https://source.denx.de/u-boot/u-boot.git
 
 WORKDIR /u-boot
 
-RUN make nanopi-r2s-rk3328_defconfig
+RUN git checkout v2023.01 && \
+    make nanopi-r2s-rk3328_defconfig
 
 RUN <<EOF cat >> .config_extra
 CONFIG_ROCKCHIP_EFUSE=y
@@ -80,7 +79,7 @@ EOF
 
 RUN cat .config_extra | sed 's|=.*|=|' | xargs -I{} sed -i 's|{}.*||' .config
 
-RUN cat .config_extra >> config
+RUN cat .config_extra >> .config
 
 RUN <<EOF cat >> arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi
 &spi0 {
@@ -90,8 +89,8 @@ RUN <<EOF cat >> arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi
 };
 EOF
 
-RUN sed -i 's|u-boot,spl-boot-order = "same-as-spl", &sdmmc, &emmc;|u-boot,spl-boot-order = "same-as-spl", \&spi0, \&sdmmc;|' \
-    arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi
+RUN sed -i.bak 's|u-boot,spl-boot-order = "same-as-spl", &sdmmc, &emmc;|u-boot,spl-boot-order = "same-as-spl", \&sdmmc, \&spi_flash;|' \
+    arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi && (! diff arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi arch/arm/dts/rk3328-nanopi-r2s-u-boot.dtsi.bak &> /dev/null)
 
 RUN <<EOF cat >> arch/arm/dts/rk3328-nanopi-r2s.dts
 &spi0 {
@@ -108,12 +107,14 @@ RUN <<EOF cat >> arch/arm/dts/rk3328-nanopi-r2s.dts
 EOF
 
 RUN <<EOF cat >> drivers/spi/rk_spi.c
-DM_DRIVER_ALIAS(rockchip_rk3288_spi, rockchip_rk3328_spi);
+DM_DRIVER_ALIAS(rockchip_rk3288_spi, rockchip_rk3328_spi)
 EOF
 
-RUN sed -i 's|[BROM_BOOTSOURCE_EMMC] = "/mmc@ff520000",|[BROM_BOOTSOURCE_SPINOR] "/spi@ff190000", [BROM_BOOTSOURCE_EMMC] = "/mmc@ff520000",|' arch/arm/mach-rockchip/rk3328/rk3328.c
+RUN sed -i.bak 's|\[BROM_BOOTSOURCE_EMMC\] = "/mmc@ff520000",|[BROM_BOOTSOURCE_SPINOR] "/spi@ff190000", [BROM_BOOTSOURCE_EMMC] = "/mmc@ff520000",|' \
+    arch/arm/mach-rockchip/rk3328/rk3328.c && (! diff arch/arm/mach-rockchip/rk3328/rk3328.c arch/arm/mach-rockchip/rk3328/rk3328.c.bak)
 
-RUN sed -i 's|uclass_get_device_by_of_offset(UCLASS_SPI_FLASH|uclass_get_device_by_of_offset(UCLASS_SPI_FLASH|' arch/arm/mach-rockchip/spl-boot-order.c
+RUN sed -i.bak 's|uclass_get_device_by_of_offset(UCLASS_SPI_FLASH|uclass_get_device_by_of_offset(UCLASS_SPI|g' \
+    arch/arm/mach-rockchip/spl-boot-order.c && (! diff arch/arm/mach-rockchip/spl-boot-order.c arch/arm/mach-rockchip/spl-boot-order.c.bak)
 
 COPY --from=trust /arm-trusted-firmware/build/rk3328/release/bl31/bl31.elf /
 
@@ -123,7 +124,15 @@ RUN BL31=/bl31.elf make CROSS_COMPILE=aarch64-linux-gnu- all -j4
 
 RUN ./tools/mkimage -n rk3328 -T rksd -d tpl/u-boot-tpl.bin idbloader.img
 
-RUN make CROSS_COMPILE=aarch64-linux-gnu- u-boot.itb
+# Uncomment this to enable debug logging in U-Boot final stage:
+#RUN <<EOF cat >> .config
+#CONFIG_LOG=y
+#CONFIG_LOGLEVEL=10
+#EOF
+#COPY uboot_debug.patch /uboot_debug.patch
+#RUN patch -p1 < /uboot_debug.patch
+
+RUN BL31=/bl31.elf make CROSS_COMPILE=aarch64-linux-gnu- u-boot.itb
 
 ###############################################################################
 
@@ -133,6 +142,8 @@ COPY --from=u-boot /u-boot/idbloader.img /
 COPY --from=u-boot /u-boot/spl/u-boot-spl.bin /
 COPY --from=u-boot /u-boot/u-boot.itb /
 
+# Note: we write u-boot.itb twice, because on SD card
+# it will be searched for at block 16384
 RUN \
     cat idbloader.img > newidb.img && \
     cat u-boot-spl.bin >> newidb.img && \
@@ -140,5 +151,5 @@ RUN \
     cat u-boot.itb >> newidb.img && \
     dd if=/dev/zero of=zero32k.bin bs=32768 count=1 && \
     cat zero32k.bin > idb_finish.img && \
-    cat newidb.img >> idb_finish.img
-
+    cat newidb.img >> idb_finish.img && \
+    dd if=u-boot.itb of=idb_finish.img bs=512 seek=16384
